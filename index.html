@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Password Checker</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        input {
+            width: 90%;
+            padding: 8px;
+            margin: 10px 0;
+        }
+
+        #passwordSection {
+            display: none;
+        }
+
+        .strength {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .missing {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+
+    <div id="usernameSection">
+        <h2><b>Username</b></h2>
+        <input type="text" id="username" placeholder="Enter username">
+        <br>
+        <button onclick="checkUsername()">Submit</button>
+    </div>
+
+    <div id="passwordSection">
+        <h2><b>Password</b></h2>
+        <input type="password" id="password" placeholder="Enter password" onkeyup="checkPassword()">
+
+        <div class="strength" id="strengthText"></div>
+        <div class="missing" id="missingText"></div>
+    </div>
+
+</div>
+
+<script>
+
+function checkUsername() {
+    var username = document.getElementById("username").value;
+
+    if (username.length > 0) {
+        document.getElementById("usernameSection").style.display = "none";
+        document.getElementById("passwordSection").style.display = "block";
+    } else {
+        alert("Please enter username");
+    }
+}
+
+function checkPassword() {
+    var password = document.getElementById("password").value;
+
+    fetch("/check_password", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password: password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("strengthText").innerHTML =
+            "Strength: " + data.strength;
+
+        document.getElementById("missingText").innerHTML =
+            data.message;
+    });
+}
+
+
+</script>
+
+</body>
+</html>
